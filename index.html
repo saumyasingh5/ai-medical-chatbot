@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical AI Assistant</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        input, button { padding: 10px; margin: 5px 0; width: 100%; }
+        #answer { background: #f0f0f0; padding: 15px; margin-top: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h2>Medical AI Assistant</h2>
+    <input type="file" id="pdfFile" accept=".pdf">
+    <button onclick="uploadPDF()">1. PDF Upload Karo</button>
+    <p id="uploadStatus"></p>
+    
+    <input type="text" id="question" placeholder="Sawaal likho...">
+    <button onclick="askQuestion()">2. Sawaal Poocho</button>
+    <div id="answer"></div>
+
+    <script>
+        const BASE_URL = '';
+        
+        async function uploadPDF() {
+            const fileInput = document.getElementById('pdfFile');
+            if (!fileInput.files[0]) return alert('PDF select karo');
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            document.getElementById('uploadStatus').innerText = 'Upload ho raha hai...';
+            const res = await fetch(BASE_URL + '/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+            document.getElementById('uploadStatus').innerText = data.message || data.error;
+        }
+        
+        async function askQuestion() {
+            const question = document.getElementById('question').value;
+            if (!question) return alert('Sawaal likho');
+            
+            document.getElementById('answer').innerText = 'Soch raha hu...';
+            const res = await fetch(BASE_URL + '/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            });
+            const data = await res.json();
+            document.getElementById('answer').innerText = data.answer;
+        }
+    </script>
+</body>
+</html>
